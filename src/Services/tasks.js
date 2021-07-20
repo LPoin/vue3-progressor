@@ -1,17 +1,24 @@
 let tasks = [];
+const storageKey = "task-vue-compo-api";
 
 function create(task) {
+	if (tasks === null) {
+		tasks = [];
+	}
 	tasks = [task, ...tasks];
 	console.log("Services | tasks.js : ", tasks);
+	save();
 }
 
 function read() {
+	tasks = load();
 	return tasks;
 }
 
 function deleteTask(id) {
 	// retourne un tableau avec toutes les taches avec un id différent de celui passé
 	tasks = tasks.filter((t) => t.id !== id);
+	save();
 }
 
 function convertCase(temporalityKebabCase) {
@@ -32,6 +39,15 @@ function convertCase(temporalityKebabCase) {
 			break;
 	}
 	return result;
+}
+
+function save() {
+	localStorage.setItem(storageKey, JSON.stringify(tasks));
+}
+
+function load() {
+	const fromLocalStorage = localStorage.getItem(storageKey);
+	return JSON.parse(fromLocalStorage);
 }
 
 export default { create, deleteTask, read, convertCase };
