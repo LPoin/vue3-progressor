@@ -2,9 +2,6 @@ let tasks = [];
 const storageKey = "task-vue-compo-api";
 
 function create(task) {
-	if (tasks === null) {
-		tasks = [];
-	}
 	tasks = [task, ...tasks];
 	console.log("Services | tasks.js : ", tasks);
 	save();
@@ -50,4 +47,15 @@ function load() {
 	return JSON.parse(fromLocalStorage);
 }
 
-export default { create, deleteTask, read, convertCase };
+function updateTask(task) {
+	const index = tasks.findIndex((t) => t.id === task.id);
+	if (index === -1) {
+		return;
+	} else {
+		tasks[index] = task;
+		console.log("TASKS.JS || updateTask ok");
+		save();
+	}
+}
+
+export default { create, deleteTask, read, convertCase, updateTask };

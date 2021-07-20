@@ -1,4 +1,10 @@
 <template>
+	<Modal
+		v-if="isEditMode"
+		:task="taskToEdit"
+		@updateTask="updateTask($event)"
+		@cancel="cancelEdit"
+	/>
 	<div>
 		<h3>Tâches en cours</h3>
 
@@ -45,6 +51,7 @@
 				<p>{{ task.description }}</p>
 				<h4>Echéance : {{ convertCase(task.temporality) }}</h4>
 				<div>
+					<button class="small" @click="() => toggle(task)">modif</button>
 					<button class="small" @click="() => deleteTask(task.id)">suppr</button>
 				</div>
 			</div>
@@ -55,15 +62,21 @@
 <script>
 import tasksService from "@/Services/tasks.js";
 import { ref, watch } from "vue";
+import Modal from "../components/Modal.vue";
 
 export default {
 	name: "Tasks",
+	components: {
+		Modal,
+	},
 	setup() {
 		const letters = ref("");
 		const selectedTemporality = ref("");
 		const tasks = ref([]);
 		tasks.value = tasksService.read();
 		let tasksFiltered = ref([]);
+		let taskToEdit = ref(null);
+		let isEditMode = ref(false);
 
 		// On filtre au début pour afficher toutes les taches
 		filter();
@@ -90,6 +103,23 @@ export default {
 			}
 		}
 
+		function toggle(task) {
+			taskToEdit.value = task;
+			isEditMode.value = true;
+		}
+
+		function updateTask(task) {
+			tasksService.updateTask(task);
+			tasks.value = tasksService.read();
+			filter();
+			cancelEdit();
+		}
+
+		function cancelEdit() {
+			isEditMode.value = false;
+			taskToEdit.value = null;
+		}
+
 		function deleteTask(id) {
 			tasksService.deleteTask(id);
 			tasks.value = tasksService.read();
@@ -107,13 +137,18 @@ export default {
 		});
 
 		return {
+			cancelEdit,
 			convertCase,
 			deleteTask,
 			filter,
+			isEditMode,
 			letters,
 			selectedTemporality,
 			tasks,
 			tasksFiltered,
+			taskToEdit,
+			toggle,
+			updateTask,
 		};
 	},
 };
@@ -132,6 +167,14 @@ export default {
 }
 
 .small {
-	width: 45px;
+	background-color: #42b983;
+	border: none;
+	color: white;
+	padding: 5px 10px;
+	margin: 10px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
 }
 </style>
