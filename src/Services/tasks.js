@@ -9,6 +9,11 @@ function read() {
 	return tasks;
 }
 
+function deleteTask(id) {
+	// retourne un tableau avec toutes les taches avec un id différent de celui passé
+	tasks = tasks.filter((t) => t.id !== id);
+}
+
 function convertCase(temporalityKebabCase) {
 	let result;
 	switch (temporalityKebabCase) {
@@ -29,4 +34,4 @@ function convertCase(temporalityKebabCase) {
 	return result;
 }
 
-export default { create, read, convertCase };
+export default { create, deleteTask, read, convertCase };
